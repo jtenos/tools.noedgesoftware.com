@@ -1,1 +1,1 @@
-export helloworld from "./helloworld/index";
+export { helloworld } from "./helloworld/index";
