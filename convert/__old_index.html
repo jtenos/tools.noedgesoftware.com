@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <title>Conversion | No Edge Software</title>
+    <style type="text/css">
+      
+      body > header {
+        border-bottom: 1px solid #777;
+        padding: 20px;
+      }
+
+      main {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <header class="container-fluid">
+      <a href="#" data-name="length">Length</a>
+    </header>
+
+    <main class="container-fluid">
+
+    </main>
+
+    <script src="https://bowercdn.net/c/urijs-1.18.10/src/URI.min.js" integrity="sha384-LsECKmenbJ2s4ZND/lWMRnZFdsW+ZS+5fA5a7hKm+U5ggKauxHHt4RHIBUUnkUQ/" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+    <script>
+      jQuery(function() {
+
+        jQuery("header > a").click(function() {
+          jQuery.ajax({
+            type: "get",
+            cache: false,
+            url: jQuery(this).data("name") + ".html"
+          }).done(function(result) {
+            jQuery("main").html(result);
+          });
+        });
+
+        jQuery("#show-length").click(function() {
+          jQuery.ajax({
+            type: "get",
+            cache: false,
+            url: "length.html"
+          }).done(function(result) {
+            jQuery("main").html(result);
+          });
+        });
+
+        jQuery("main").on("keyup", "input", function(e) {
+          if ([9,16,17,18,37,39].indexOf(e.which) >= 0) {
+            return;
+          }
+          var $section = jQuery(this).closest("section");
+          var $this = jQuery(this);
+          var val = $this.val();
+          var $base = jQuery("#" + $section.data("base"));
+          var baseVal = val / $this.data("multiplier");
+          if ($base[0] != $this[0]) {
+            $base.val(baseVal);
+          }
+          
+          populateSection($section, $this.attr("id"));
+          populateOtherSections($section);
+        });
+
+        jQuery("main").on("click", "input", function() {
+          jQuery(this).select();
+        });
+
+      });
+
+      function populateSection($section, idToSkip) {
+        var $base = jQuery("#" + $section.data("base"));
+        var baseVal = $base.val();
+        $section.find("input").each(function() {
+          if (jQuery(this)[0].id == idToSkip) {
+            return;
+          }
+          jQuery(this).val(baseVal * jQuery(this).data("multiplier"));
+        });
+      }
+      
+      function populateOtherSections($fromSection) {
+        var $fromInput = jQuery("#" + $fromSection.data("base"));
+        jQuery("section").each(function() {
+          if (jQuery(this)[0] == $fromSection[0]) {
+            return;
+          }
+          
+          var multiplier = jQuery(this).data("multiplier-" + $fromSection.data("base"));
+          var baseName = jQuery(this).data("base");
+          var $base = jQuery(this).find("#" + baseName);
+          $base.val($fromInput.val() * multiplier);
+          populateSection(jQuery(this), $base.attr("id"));
+        });
+      }
+
+      (function() {
+        var queryNow = parseInt(URI.parseQuery(URI.parse(location.href).query)._, 10);
+        if (isNaN(queryNow) || Math.abs(queryNow - Date.now()) > 60000) {
+            location.href = "index.html?_=" + Date.now();
+        }
+      })();
+    </script>
+  </body>
+</html>
