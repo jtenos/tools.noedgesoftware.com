@@ -1,0 +1,11 @@
+cd convert
+npm run build
+
+cd ..
+
+rm --recursive --dir public
+mkdir public
+cp --recursive buildimgtag public/
+cp --recursive convert/dist/* public/
+
+firebase deploy
